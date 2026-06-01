@@ -1340,6 +1340,91 @@
           }
         });
 
+        function initMemberPagination() {
+          var memberOutput = page.querySelector(".rw-members-output");
+
+          if (!memberOutput || memberOutput.getAttribute("data-rw-pagination-ready") === "true") {
+            return;
+          }
+
+          var topList = memberOutput.querySelector("#pagination-dacdb-top");
+          var bottomList = memberOutput.querySelector("#pagination-dacdb-bottom");
+          var sections = Array.prototype.slice.call(memberOutput.querySelectorAll(".page-content"));
+          var paginationData = window.dacdbMemberPagination;
+
+          if (!paginationData || !sections.length) {
+            return;
+          }
+
+          if ((topList && topList.children.length) || (bottomList && bottomList.children.length)) {
+            memberOutput.setAttribute("data-rw-pagination-ready", "true");
+            return;
+          }
+
+          var totalPages = paginationData.totalPages || sections.length;
+          var currentPage = paginationData.currentPage || 1;
+
+          function buildPageItem(label, pageNumber, options) {
+            var li = document.createElement("li");
+            var element = document.createElement(options.disabled ? "span" : "a");
+
+            element.textContent = label;
+
+            if (options.current) {
+              element.className = "current";
+              element.setAttribute("aria-current", "page");
+            }
+
+            if (!options.disabled) {
+              element.setAttribute("href", "#");
+              element.addEventListener("click", function (event) {
+                event.preventDefault();
+                setActivePage(pageNumber);
+              });
+            }
+
+            li.appendChild(element);
+            return li;
+          }
+
+          function renderList(list) {
+            if (!list) {
+              return;
+            }
+
+            list.innerHTML = "";
+            list.appendChild(buildPageItem("Prev", Math.max(1, currentPage - 1), { disabled: currentPage === 1 }));
+
+            for (var pageNumber = 1; pageNumber <= totalPages; pageNumber += 1) {
+              list.appendChild(buildPageItem(String(pageNumber), pageNumber, { current: pageNumber === currentPage }));
+            }
+
+            list.appendChild(buildPageItem("Next", Math.min(totalPages, currentPage + 1), { disabled: currentPage === totalPages }));
+          }
+
+          function setActivePage(pageNumber) {
+            currentPage = Math.min(Math.max(pageNumber, 1), totalPages);
+            paginationData.currentPage = currentPage;
+
+            sections.forEach(function (section, index) {
+              section.style.display = index + 1 === currentPage ? "" : "none";
+            });
+
+            renderList(topList);
+            renderList(bottomList);
+
+            window.requestAnimationFrame(function () {
+              window.dispatchEvent(new Event("resize"));
+            });
+          }
+
+          memberOutput.setAttribute("data-rw-pagination-ready", "true");
+          setActivePage(currentPage);
+        }
+
+        initMemberPagination();
+        window.setTimeout(initMemberPagination, 250);
+
         function activateTab(tab) {
           var targetId = tab.getAttribute("data-rw-tab");
 
@@ -1352,6 +1437,10 @@
             panel.classList.toggle("is-hidden", !isActive);
             panel.setAttribute("aria-hidden", isActive ? "false" : "true");
           });
+
+          if (targetId === "rw-panel-members") {
+            window.setTimeout(initMemberPagination, 0);
+          }
 
           window.requestAnimationFrame(function () {
             window.dispatchEvent(new Event("resize"));
