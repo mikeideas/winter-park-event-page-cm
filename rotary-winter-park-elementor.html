@@ -1389,8 +1389,7 @@
             year: "numeric"
           }).format(meeting.date);
           var location = "Winter Park Country Club, 761 Old England Ave, Winter Park, FL 32789";
-          var details = (meeting.subtitle ? meeting.subtitle + "
-" : "") + (meeting.summary || "Rotary Club of Winter Park meeting.");
+          var details = (meeting.subtitle ? meeting.subtitle + "\n" : "") + (meeting.summary || "Rotary Club of Winter Park meeting.");
           var url = new URL("https://calendar.google.com/calendar/render");
 
           url.searchParams.set("action", "TEMPLATE");
