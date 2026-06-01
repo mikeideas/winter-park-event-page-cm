@@ -192,17 +192,38 @@
       background: var(--rw-soft);
     }
 
-    .rw-photo img {
+    .rw-photo-track {
+      position: relative;
+      min-height: 380px;
+    }
+
+    .rw-photo-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 320ms ease;
+    }
+
+    .rw-photo-slide.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .rw-photo-slide img {
+      display: block;
       width: 100%;
       height: 100%;
       min-height: 380px;
       object-fit: cover;
+      object-position: center center;
     }
 
     .rw-photo-badge {
       position: absolute;
       right: 18px;
       bottom: 18px;
+      z-index: 3;
       max-width: 280px;
       padding: 14px 16px;
       border-radius: 8px;
@@ -231,6 +252,61 @@
     .rw-photo-badge a:hover,
     .rw-photo-badge a:focus {
       color: var(--rw-blue);
+    }
+
+    .rw-photo-nav {
+      position: absolute;
+      top: 50%;
+      z-index: 3;
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 6px;
+      background: rgba(18, 25, 39, 0.68);
+      color: var(--rw-white);
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+
+    .rw-photo-nav:hover,
+    .rw-photo-nav:focus {
+      background: rgba(18, 25, 39, 0.9);
+    }
+
+    .rw-photo-nav.is-prev {
+      left: 14px;
+    }
+
+    .rw-photo-nav.is-next {
+      right: 14px;
+    }
+
+    .rw-photo-dots {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      z-index: 3;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: calc(100% - 330px);
+    }
+
+    .rw-photo-dot {
+      width: 10px;
+      height: 10px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.45);
+      cursor: pointer;
+    }
+
+    .rw-photo-dot.is-active {
+      background: var(--rw-white);
     }
 
     .rw-facts {
@@ -913,7 +989,8 @@
       }
 
       .rw-photo,
-      .rw-photo img {
+      .rw-photo-track,
+      .rw-photo-slide img {
         min-height: 280px;
       }
 
@@ -976,8 +1053,27 @@
         </div>
       </div>
 
-      <figure class="rw-photo">
-        <img src="https://www.winterparkrotary.com/wp-content/uploads/2021/05/Meeting.png" alt="Winter Park Rotary meeting at Winter Park Country Club" loading="lazy">
+      <figure class="rw-photo" data-rw-hero-slider>
+        <div class="rw-photo-track">
+          <div class="rw-photo-slide is-active">
+            <img src="https://www.winterparkrotary.com/wp-content/uploads/2021/05/Meeting.png" alt="Winter Park Rotary meeting at Winter Park Country Club" loading="lazy">
+          </div>
+          <div class="rw-photo-slide">
+            <img src="https://www.winterparkrotary.com/wp-content/uploads/2026/01/DSC7132.jpg" alt="Winter Park Rotary members gathered during a club meeting" loading="lazy">
+          </div>
+          <div class="rw-photo-slide">
+            <img src="https://www.winterparkrotary.com/wp-content/uploads/2026/01/DSC7136.jpg" alt="Winter Park Rotary speaker and members during a weekly program" loading="lazy">
+          </div>
+          <div class="rw-photo-slide">
+            <img src="https://www.winterparkrotary.com/wp-content/uploads/2026/01/DSC7103.jpg" alt="Winter Park Rotary members connecting at a weekly luncheon" loading="lazy">
+          </div>
+          <div class="rw-photo-slide">
+            <img src="https://www.winterparkrotary.com/wp-content/uploads/2026/01/552033320_1240247611476118_5277563467128187451_n.jpg" alt="Winter Park Rotary group photo" loading="lazy">
+          </div>
+        </div>
+        <button class="rw-photo-nav is-prev" type="button" aria-label="Show previous hero image">&#8249;</button>
+        <button class="rw-photo-nav is-next" type="button" aria-label="Show next hero image">&#8250;</button>
+        <div class="rw-photo-dots" aria-label="Hero image navigation"></div>
         <figcaption class="rw-photo-badge">
           <strong>Mondays</strong>
           <a href="https://maps.app.goo.gl/V9BrbfLgakm8YWKK6" target="_blank" rel="noopener">Winter Park Country Club</a><br>
@@ -1228,6 +1324,7 @@
         var panels = page.querySelectorAll(".rw-panel");
         var calendarButtons = page.querySelectorAll("[data-rw-calendar]");
         var nextDateTargets = page.querySelectorAll("[data-rw-next-date]");
+        var heroSlider = page.querySelector("[data-rw-hero-slider]");
 
         function getEasternParts(date) {
           var formatter = new Intl.DateTimeFormat("en-US", {
@@ -1399,6 +1496,79 @@
           };
         }
 
+        function initHeroSlider() {
+          if (!heroSlider) {
+            return;
+          }
+
+          var slides = Array.prototype.slice.call(heroSlider.querySelectorAll(".rw-photo-slide"));
+          var prevButton = heroSlider.querySelector(".rw-photo-nav.is-prev");
+          var nextButton = heroSlider.querySelector(".rw-photo-nav.is-next");
+          var dotsWrap = heroSlider.querySelector(".rw-photo-dots");
+          var currentIndex = 0;
+          var autoAdvance = null;
+
+          if (!slides.length) {
+            return;
+          }
+
+          function renderDots() {
+            dotsWrap.innerHTML = "";
+
+            slides.forEach(function (_, index) {
+              var dot = document.createElement("button");
+              dot.type = "button";
+              dot.className = "rw-photo-dot" + (index === currentIndex ? " is-active" : "");
+              dot.setAttribute("aria-label", "Show hero image " + (index + 1));
+              dot.addEventListener("click", function () {
+                setSlide(index);
+                restartAutoAdvance();
+              });
+              dotsWrap.appendChild(dot);
+            });
+          }
+
+          function setSlide(index) {
+            currentIndex = (index + slides.length) % slides.length;
+
+            slides.forEach(function (slide, slideIndex) {
+              slide.classList.toggle("is-active", slideIndex === currentIndex);
+            });
+
+            Array.prototype.slice.call(dotsWrap.querySelectorAll(".rw-photo-dot")).forEach(function (dot, dotIndex) {
+              dot.classList.toggle("is-active", dotIndex === currentIndex);
+            });
+          }
+
+          function restartAutoAdvance() {
+            if (autoAdvance) {
+              window.clearInterval(autoAdvance);
+            }
+
+            autoAdvance = window.setInterval(function () {
+              setSlide(currentIndex + 1);
+            }, 5000);
+          }
+
+          if (prevButton) {
+            prevButton.addEventListener("click", function () {
+              setSlide(currentIndex - 1);
+              restartAutoAdvance();
+            });
+          }
+
+          if (nextButton) {
+            nextButton.addEventListener("click", function () {
+              setSlide(currentIndex + 1);
+              restartAutoAdvance();
+            });
+          }
+
+          renderDots();
+          setSlide(0);
+          restartAutoAdvance();
+        }
+
         function applyCalendarData() {
           var calendarData = buildCalendarData();
 
@@ -1423,6 +1593,7 @@
           });
         }
 
+        initHeroSlider();
         applyCalendarData();
         window.setTimeout(applyCalendarData, 250);
         window.setTimeout(applyCalendarData, 1000);
