@@ -1425,7 +1425,61 @@
           });
         }
 
+        function parseCalendarGridTime(dateString, timeString) {
+          if (!dateString || !timeString) {
+            return null;
+          }
+
+          var match = String(timeString).trim().match(/^(\d{1,2})(?::(\d{2}))?\s*([ap])m?$/i);
+
+          if (!match) {
+            return null;
+          }
+
+          var dateParts = dateString.split("-");
+          var hour = parseInt(match[1], 10) % 12;
+
+          if (match[3].toLowerCase() === "p") {
+            hour += 12;
+          }
+
+          return easternPartsToDate({
+            year: parseInt(dateParts[0], 10),
+            month: parseInt(dateParts[1], 10),
+            day: parseInt(dateParts[2], 10),
+            hour: hour,
+            minute: parseInt(match[2] || "0", 10)
+          });
+        }
+
         function parseCalendarEvents() {
+          var gridEvents = Array.prototype.slice.call(page.querySelectorAll(".rw-calendar-output .fc-daygrid-day[data-date] .fc-event")).map(function (eventNode) {
+            var dayCell = eventNode.closest(".fc-daygrid-day[data-date]");
+            var dateString = dayCell ? dayCell.getAttribute("data-date") : "";
+            var titleNode = eventNode.querySelector(".fc-event-title");
+            var timeNode = eventNode.querySelector(".fc-event-time");
+            var title = titleNode ? titleNode.textContent.trim() : eventNode.textContent.trim();
+            var timeText = timeNode ? timeNode.textContent.trim() : "";
+            var eventDate = parseCalendarGridTime(dateString, timeText);
+
+            if (!dateString || !title || !eventDate) {
+              return null;
+            }
+
+            return {
+              title: title,
+              subtitle: "",
+              summary: "",
+              date: eventDate
+            };
+          }).filter(Boolean);
+
+          if (gridEvents.length) {
+            return gridEvents.sort(function (a, b) {
+              return a.date.getTime() - b.date.getTime();
+            });
+          }
+
           return Array.prototype.slice.call(page.querySelectorAll(".rw-calendar-output .dacdb_plus_event")).map(function (node) {
             var rawText = node.textContent || "";
             var lines = rawText.split(/\n+/).map(function (line) {
