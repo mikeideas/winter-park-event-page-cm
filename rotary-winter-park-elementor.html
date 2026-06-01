@@ -955,10 +955,9 @@
   </style>
 
   <div class="rw-shell">
-    <div class="rw-topline" aria-label="Rotary Club of Winter Park page intro">
-      <div><strong>Rotary Club of Winter Park</strong> / Service Above Self</div>
+    <div class="rw-topline" aria-label="Rotary Club of WP page intro">
+      <div><strong>Rotary Club of WP</strong> / Service Above Self</div>
       <div class="rw-socials" aria-label="Rotary links">
-        <a href="https://www.winterparkrotary.com/member-portal/">Member Portal</a>
         <a href="https://www.dacdb.com/" target="_blank" rel="noopener">DACdb Login</a>
         <a href="https://www.winterparkrotary.com/contact/">Contact</a>
       </div>
@@ -1023,7 +1022,7 @@
           <span class="rw-eyebrow">Upcoming Speaker</span>
           <h2>Live speaker schedule</h2>
         </div>
-        <p>Speaker details are pulled from DACdb so the page can stay current without rebuilding event cards by hand.</p>
+        <p>See upcoming guest speakers, weekly programs, and conversations shaping the weeks ahead.</p>
       </div>
       <div class="rw-live-output rw-speakers-output">
         [dacdb_plus show="speakers"]
@@ -1036,7 +1035,7 @@
           <span class="rw-eyebrow">Events Calendar</span>
           <h2>Club and community events</h2>
         </div>
-        <p>See upcoming meetings, service projects, community events, and district dates from the DACdb calendar.</p>
+        <p>Keep up with weekly meetings, service opportunities, fellowship events, and club dates throughout the year.</p>
       </div>
       <div class="rw-live-output rw-calendar-output">
         [dacdb_plus show="calendar"]
@@ -1077,7 +1076,7 @@
           <span class="rw-eyebrow">Member Directory</span>
           <h2>Connect with members</h2>
         </div>
-        <p>Member information is pulled from DACdb so directory updates can be handled from the club database.</p>
+        <p>Browse the club directory and connect with fellow members across Winter Park Rotary.</p>
       </div>
       <div class="rw-live-output rw-members-output">
         [dacdb_plus show="members"]
@@ -1342,25 +1341,54 @@
 
         function initMemberPagination() {
           var memberOutput = page.querySelector(".rw-members-output");
+          var pageWrapper = memberOutput ? memberOutput.querySelector("#page-wrapper") : null;
 
-          if (!memberOutput || memberOutput.getAttribute("data-rw-pagination-ready") === "true") {
+          if (!memberOutput || !pageWrapper) {
             return;
           }
 
-          var topList = memberOutput.querySelector("#pagination-dacdb-top");
-          var bottomList = memberOutput.querySelector("#pagination-dacdb-bottom");
           var sections = Array.prototype.slice.call(memberOutput.querySelectorAll(".page-content"));
-          var paginationData = window.dacdbMemberPagination;
+          var paginationData = window.dacdbMemberPagination || { totalPages: sections.length, currentPage: 1 };
 
-          if (!paginationData || !sections.length) {
+          if (!sections.length) {
             return;
           }
 
-          if ((topList && topList.children.length) || (bottomList && bottomList.children.length)) {
-            memberOutput.setAttribute("data-rw-pagination-ready", "true");
-            return;
+          function ensurePaginationList(position) {
+            var existing = memberOutput.querySelector(position === "top" ? "#pagination-dacdb-top" : "#pagination-dacdb-bottom");
+
+            if (existing) {
+              return existing;
+            }
+
+            var container = document.createElement("div");
+            container.className = "pagination-container pagination-container-" + position + " clearfix";
+
+            var align = document.createElement("div");
+            align.className = "pagination-left";
+
+            var nav = document.createElement("nav");
+            nav.setAttribute("aria-label", "Member directory pagination (" + position + ")");
+
+            var list = document.createElement("ul");
+            list.id = position === "top" ? "pagination-dacdb-top" : "pagination-dacdb-bottom";
+            list.className = "pagination";
+
+            nav.appendChild(list);
+            align.appendChild(nav);
+            container.appendChild(align);
+
+            if (position === "top") {
+              pageWrapper.parentNode.insertBefore(container, pageWrapper);
+            } else {
+              pageWrapper.parentNode.insertBefore(container, pageWrapper.nextSibling);
+            }
+
+            return list;
           }
 
+          var topList = ensurePaginationList("top");
+          var bottomList = ensurePaginationList("bottom");
           var totalPages = paginationData.totalPages || sections.length;
           var currentPage = paginationData.currentPage || 1;
 
@@ -1405,6 +1433,7 @@
           function setActivePage(pageNumber) {
             currentPage = Math.min(Math.max(pageNumber, 1), totalPages);
             paginationData.currentPage = currentPage;
+            window.dacdbMemberPagination = paginationData;
 
             sections.forEach(function (section, index) {
               section.style.display = index + 1 === currentPage ? "" : "none";
@@ -1418,12 +1447,12 @@
             });
           }
 
-          memberOutput.setAttribute("data-rw-pagination-ready", "true");
           setActivePage(currentPage);
         }
 
         initMemberPagination();
         window.setTimeout(initMemberPagination, 250);
+        window.setTimeout(initMemberPagination, 1000);
 
         function activateTab(tab) {
           var targetId = tab.getAttribute("data-rw-tab");
