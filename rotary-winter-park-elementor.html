@@ -1459,7 +1459,13 @@
           var events = parseCalendarEvents();
 
           return events.find(function (event) {
-            return /winter park weekly meeting/i.test(event.title) && !/no lunch/i.test(event.title + ' ' + event.subtitle + ' ' + event.summary) && event.date.getTime() >= now.getTime();
+            var eventText = (event.title + ' ' + event.subtitle + ' ' + event.summary).toLowerCase();
+            var easternEvent = getEasternParts(event.date);
+            var isMonday = easternEvent.weekday === "Mon";
+            var isWeeklyMeeting = /winter park weekly meeting|weekly meeting|club meeting|luncheon/i.test(eventText);
+            var isSkippedWeek = /no lunch|cancelled|canceled|dark week|holiday/i.test(eventText);
+
+            return isMonday && isWeeklyMeeting && !isSkippedWeek && event.date.getTime() >= now.getTime();
           }) || null;
         }
 
