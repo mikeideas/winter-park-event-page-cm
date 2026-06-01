@@ -405,6 +405,241 @@
 
     .rw-members-output {
       min-height: 520px;
+      overflow: visible;
+    }
+
+    .rw-members-output .page-content,
+    .rw-members-output #dacdb-member-pagination-container,
+    .rw-members-output .rotary-members-photos-50 {
+      width: 100%;
+    }
+
+    .rw-members-output .dac-row {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      margin-left: -12px;
+      margin-right: -12px;
+      clear: both;
+    }
+
+    .rw-members-output .member-directory__item {
+      display: flex;
+      width: 100%;
+      margin-bottom: 20px;
+      padding: 12px;
+      box-sizing: border-box;
+    }
+
+    .rw-members-output .member-directory__item--col-1,
+    .rw-members-output .member-directory__item--col-2,
+    .rw-members-output .member-directory__item--col-3,
+    .rw-members-output .member-directory__item--col-4 {
+      width: 100%;
+    }
+
+    .rw-members-output .member-directory__item > table,
+    .rw-members-output .member-directory__table {
+      width: 100%;
+      height: 100%;
+      table-layout: auto !important;
+      border: 0 !important;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--rw-white);
+    }
+
+    .rw-members-output td.member-directory__image-cell {
+      width: auto !important;
+      min-width: 180px;
+      padding: 0;
+      border: 0 !important;
+      vertical-align: top;
+    }
+
+    .rw-members-output td.member-directory__image-cell > div {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      border-radius: 8px;
+      background: var(--rw-soft);
+    }
+
+    .rw-members-output td.member-directory__image-cell img.member-directory__image {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .rw-members-output td.member-directory__content {
+      padding: 0 0 0 16px;
+      border: 0 !important;
+      vertical-align: top;
+      text-align: left;
+      white-space: normal;
+      word-break: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .rw-members-output .member-directory__content br {
+      display: none;
+    }
+
+    .rw-members-output .member-directory__content > div,
+    .rw-members-output .member-directory__content > p,
+    .rw-members-output .member-directory__content > span {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .rw-members-output .member-directory__name {
+      display: block;
+      margin: 0 0 6px;
+      color: var(--rw-ink);
+      font-size: 22px;
+      line-height: 1.15;
+      font-weight: 900;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .rw-members-output .member-directory__position {
+      display: block;
+      margin: 0 0 8px;
+      color: var(--rw-blue);
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 800;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .rw-members-output .member-card__business-info,
+    .rw-members-output .member-directory__content p,
+    .rw-members-output .member-directory__content span {
+      color: var(--rw-muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .rw-members-output .pagination-container {
+      width: 100%;
+      margin: 0 0 24px;
+      clear: both;
+    }
+
+    .rw-members-output .pagination-left,
+    .rw-members-output .pagination-center,
+    .rw-members-output .pagination-right {
+      text-align: left;
+    }
+
+    .rw-members-output .pagination,
+    .rw-members-output #pagination-dacdb-top,
+    .rw-members-output #pagination-dacdb-bottom {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .rw-members-output .pagination a,
+    .rw-members-output .pagination span,
+    .rw-members-output #pagination-dacdb-top a,
+    .rw-members-output #pagination-dacdb-top span,
+    .rw-members-output #pagination-dacdb-bottom a,
+    .rw-members-output #pagination-dacdb-bottom span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      min-height: 40px;
+      padding: 8px 12px;
+      border: 1px solid var(--rw-line);
+      border-radius: 6px;
+      background: var(--rw-white);
+      color: var(--rw-blue);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .rw-members-output .pagination .current,
+    .rw-members-output #pagination-dacdb-top .current,
+    .rw-members-output #pagination-dacdb-bottom .current {
+      border-color: var(--rw-blue);
+      background: var(--rw-blue);
+      color: var(--rw-white);
+    }
+
+    .rw-members-output .rotary-members-photos-50 a.member-directory__contact-btn {
+      color: #ffffff !important;
+      background-color: #005daa;
+      text-decoration: none;
+      padding: 0.4em 0.8em;
+      border-radius: 4px;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .rw-members-output .rotary-members-photos-50 a.member-directory__contact-btn:hover {
+      background-color: #0072ce;
+      color: #ffffff !important;
+    }
+
+    @media (min-width: 700px) {
+      .rw-members-output .member-directory__item--col-2,
+      .rw-members-output .member-directory__item--col-3,
+      .rw-members-output .member-directory__item--col-4 {
+        width: 50%;
+      }
+    }
+
+    @media (min-width: 1040px) {
+      .rw-members-output .member-directory__item--col-3 {
+        width: 33.3333%;
+      }
+
+      .rw-members-output .member-directory__item--col-4 {
+        width: 25%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .rw-members-output .member-directory__item {
+        padding: 10px 0;
+      }
+
+      .rw-members-output .member-directory__item > table,
+      .rw-members-output .member-directory__table,
+      .rw-members-output .member-directory__table tbody,
+      .rw-members-output .member-directory__table tr {
+        display: block;
+      }
+
+      .rw-members-output td.member-directory__image-cell,
+      .rw-members-output td.member-directory__content {
+        display: block;
+        width: 100% !important;
+        text-align: left;
+      }
+
+      .rw-members-output td.member-directory__image-cell {
+        min-width: 0;
+        margin-bottom: 14px;
+      }
+
+      .rw-members-output td.member-directory__content {
+        padding-left: 0;
+      }
     }
 
     .rw-visit-grid {
