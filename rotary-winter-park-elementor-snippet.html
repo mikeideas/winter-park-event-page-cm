@@ -354,6 +354,31 @@
       color: var(--rw-blue);
     }
 
+    .rw-fact-button {
+      justify-content: center;
+      background: var(--rw-blue);
+    }
+
+    .rw-fact-button span,
+    .rw-fact-button strong,
+    .rw-fact-button em {
+      color: var(--rw-white);
+    }
+
+    .rw-fact-button:hover,
+    .rw-fact-button:focus {
+      background: var(--rw-ink);
+    }
+
+    .rw-fact-button:hover strong,
+    .rw-fact-button:focus strong {
+      color: var(--rw-white);
+    }
+
+    .rw-section-cta {
+      margin-top: 18px;
+    }
+
     .rw-tabs-wrap {
       position: sticky;
       top: 0;
@@ -1047,9 +1072,7 @@
         <h1 id="rw-page-title">Weekly talks, service events, and ways to connect.</h1>
         <p>Every Monday, members come together at the <a href="https://maps.app.goo.gl/V9BrbfLgakm8YWKK6" target="_blank" rel="noopener"><strong>Winter Park Country Club</strong></a> for connection, city updates, inspiring talks, and community service.</p>
         <div class="rw-cta-row" aria-label="Primary actions">
-          <a class="rw-button" href="https://www.winterparkrotary.com/new-members/">Member Application</a>
           <a class="rw-button is-secondary rw-add-calendar" href="https://calendar.google.com/calendar/render?action=TEMPLATE" target="_blank" rel="noopener" data-rw-calendar>Add to calendar</a>
-          <a class="rw-button is-secondary" href="https://www.winterparkrotary.com/guest-presenters/">Speaker Application</a>
         </div>
       </div>
 
@@ -1093,9 +1116,10 @@
         <strong>Mondays 11:45am - 1:00pm</strong>
         <em class="rw-dynamic-date" data-rw-next-date>Next meeting date loading...</em>
       </a>
-      <a class="rw-fact" href="https://www.winterparkrotary.com/guest-presenters/">
+      <a class="rw-fact rw-fact-button" href="https://www.winterparkrotary.com/guest-presenters/">
         <span>Program</span>
-        <strong>Speaker Application</strong>
+        <strong>Apply To Speak</strong>
+        <em>Guest speaker application</em>
       </a>
     </div>
   </div>
@@ -1105,9 +1129,9 @@
       <div class="rw-tabs" role="tablist" aria-label="Winter Park Rotary sections">
         <button class="rw-tab" id="rw-tab-speakers" type="button" role="tab" aria-selected="true" aria-controls="rw-panel-speakers" data-rw-tab="rw-panel-speakers">Speakers</button>
         <button class="rw-tab" id="rw-tab-calendar" type="button" role="tab" aria-selected="false" aria-controls="rw-panel-calendar" data-rw-tab="rw-panel-calendar">Calendar</button>
+        <button class="rw-tab" id="rw-tab-past-speakers" type="button" role="tab" aria-selected="false" aria-controls="rw-panel-past-speakers" data-rw-tab="rw-panel-past-speakers">Past Speakers</button>
         <button class="rw-tab" id="rw-tab-members" type="button" role="tab" aria-selected="false" aria-controls="rw-panel-members" data-rw-tab="rw-panel-members">Members</button>
         <button class="rw-tab" id="rw-tab-visit" type="button" role="tab" aria-selected="false" aria-controls="rw-panel-visit" data-rw-tab="rw-panel-visit">Visit</button>
-        <button class="rw-tab" id="rw-tab-past-speakers" type="button" role="tab" aria-selected="false" aria-controls="rw-panel-past-speakers" data-rw-tab="rw-panel-past-speakers">Past Speakers</button>
       </div>
     </div>
   </div>
@@ -1123,6 +1147,9 @@
       </div>
       <div class="rw-live-output rw-speakers-output">
         [dacdb_plus show="speakers"]
+      </div>
+      <div class="rw-cta-row rw-section-cta">
+        <a class="rw-button" href="https://www.winterparkrotary.com/guest-presenters/">Speaker Application</a>
       </div>
     </section>
 
@@ -1213,7 +1240,6 @@
           <h3>Tap into a community of Service Above Self.</h3>
           <p>Tune into exciting talks, community impact events, and ways to connect with Winter Park.</p>
           <div class="rw-side-links">
-            <a href="https://www.winterparkrotary.com/new-members/">Member Application <span>Open</span></a>
             <a href="https://www.winterparkrotary.com/guest-presenters/">Speaker Application <span>Open</span></a>
             <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Winter%20Park%20Country%20Club%2C%20761%20Old%20England%20Ave%2C%20Winter%20Park%2C%20FL%2032789" target="_blank" rel="noopener">Meeting Directions <span>Open</span></a>
           </div>
@@ -1309,8 +1335,7 @@
       <h2>Ready to get involved?</h2>
       <p>Visit a Monday meeting, apply for membership, or connect with the club about upcoming programs and community service opportunities.</p>
       <div class="rw-cta-row">
-        <a class="rw-button" href="https://www.winterparkrotary.com/new-members/">Member Application</a>
-        <a class="rw-button is-secondary" href="https://www.winterparkrotary.com/contact/">Contact The Club</a>
+        <a class="rw-button" href="https://www.winterparkrotary.com/contact/">Contact The Club</a>
       </div>
     </section>
   </div>
