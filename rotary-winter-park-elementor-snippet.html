@@ -178,9 +178,16 @@
     .rw-button[aria-disabled="true"] {
       border-color: var(--rw-line);
       background: var(--rw-soft);
-      color: var(--rw-muted) !important;
+      color: var(--rw-ink) !important;
       cursor: not-allowed;
       pointer-events: none;
+    }
+
+    .rw-button.rw-add-calendar.is-disabled,
+    .rw-button.rw-add-calendar[aria-disabled="true"] {
+      background: var(--rw-soft) !important;
+      border-color: var(--rw-line) !important;
+      color: var(--rw-ink) !important;
     }
 
     .rw-photo {
