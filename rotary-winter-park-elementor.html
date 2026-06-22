@@ -1488,7 +1488,7 @@
 
         function parseEventCards(selector) {
           return Array.prototype.slice.call(page.querySelectorAll(selector)).map(function (node) {
-            var rawText = node.textContent || "";
+            var rawText = node.innerText || node.textContent || "";
             var lines = rawText.split(/\n+/).map(function (line) {
               return line.trim();
             }).filter(Boolean).filter(function (line) {
