@@ -1350,6 +1350,8 @@
         var calendarButtons = page.querySelectorAll("[data-rw-calendar]");
         var nextDateTargets = page.querySelectorAll("[data-rw-next-date]");
         var heroSlider = page.querySelector("[data-rw-hero-slider]");
+        var speakersOutput = page.querySelector(".rw-speakers-output");
+        var speakersObserver = null;
 
         function getEasternParts(date) {
           var formatter = new Intl.DateTimeFormat("en-US", {
@@ -1469,6 +1471,39 @@
           });
         }
 
+        function parseEventCards(selector) {
+          return Array.prototype.slice.call(page.querySelectorAll(selector)).map(function (node) {
+            var rawText = node.textContent || "";
+            var lines = rawText.split(/\n+/).map(function (line) {
+              return line.trim();
+            }).filter(Boolean).filter(function (line) {
+              return line.toLowerCase() !== "more info";
+            });
+            var dateLine = lines.find(function (line) {
+              return /\b20\d{2}\b/.test(line) && /at\s+\d{1,2}:\d{2}\s*[ap]m/i.test(line);
+            });
+            var eventDate = dateLine ? parseCalendarDateLine(dateLine) : null;
+
+            if (!lines.length || !eventDate) {
+              return null;
+            }
+
+            return {
+              title: lines[0],
+              subtitle: lines[1] || "",
+              summary: lines.slice(2).filter(function (line) {
+                return line !== dateLine;
+              }).join(" "),
+              date: eventDate
+            };
+          }).filter(Boolean).sort(function (a, b) {
+            return a.date.getTime() - b.date.getTime();
+          });
+        }
+        function parseSpeakerEvents() {
+          return parseEventCards(".rw-speakers-output .dacdb_plus_event");
+        }
+
         function parseCalendarEvents() {
           var gridEvents = Array.prototype.slice.call(page.querySelectorAll(".rw-calendar-output .fc-daygrid-day[data-date] .fc-event")).map(function (eventNode) {
             var dayCell = eventNode.closest(".fc-daygrid-day[data-date]");
@@ -1497,37 +1532,16 @@
             });
           }
 
-          return Array.prototype.slice.call(page.querySelectorAll(".rw-calendar-output .dacdb_plus_event")).map(function (node) {
-            var rawText = node.textContent || "";
-            var lines = rawText.split(/\n+/).map(function (line) {
-              return line.trim();
-            }).filter(Boolean).filter(function (line) {
-              return line.toLowerCase() !== "more info";
-            });
-            var dateLine = lines.find(function (line) {
-              return /\b20\d{2}\b/.test(line) && /at\s+\d{1,2}:\d{2}\s*[ap]m/i.test(line);
-            });
-            var eventDate = dateLine ? parseCalendarDateLine(dateLine) : null;
-
-            if (!lines.length || !eventDate) {
-              return null;
-            }
-
-            return {
-              title: lines[0],
-              subtitle: lines[1] || "",
-              summary: lines.slice(2).filter(function (line) {
-                return line !== dateLine;
-              }).join(" "),
-              date: eventDate
-            };
-          }).filter(Boolean).sort(function (a, b) {
-            return a.date.getTime() - b.date.getTime();
-          });
+          return parseEventCards(".rw-calendar-output .dacdb_plus_event");
         }
+
         function getNextScheduledMeeting() {
           var now = new Date();
-          var events = parseCalendarEvents();
+          var events = parseSpeakerEvents();
+
+          if (!events.length) {
+            events = parseCalendarEvents();
+          }
 
           return events.find(function (event) {
             var eventText = (event.title + ' ' + event.subtitle + ' ' + event.summary).toLowerCase();
@@ -1539,7 +1553,6 @@
             return isMonday && isWeeklyMeeting && !isSkippedWeek && event.date.getTime() >= now.getTime();
           }) || null;
         }
-
         function buildCalendarData() {
           var meeting = getNextScheduledMeeting();
 
@@ -1678,10 +1691,42 @@
           });
         }
 
+        function speakerMarkupReady() {
+          return !!(speakersOutput && speakersOutput.querySelector(".dacdb_plus_event"));
+        }
+
+        function refreshCalendarDataWhenReady() {
+          if (speakerMarkupReady() || parseCalendarEvents().length) {
+            applyCalendarData();
+            return true;
+          }
+
+          return false;
+        }
+
+        function watchSpeakerOutput() {
+          if (!speakersOutput || speakersObserver || typeof MutationObserver !== "function") {
+            return;
+          }
+
+          speakersObserver = new MutationObserver(function () {
+            refreshCalendarDataWhenReady();
+          });
+
+          speakersObserver.observe(speakersOutput, {
+            childList: true,
+            subtree: true
+          });
+        }
+
         initHeroSlider();
         applyCalendarData();
-        window.setTimeout(applyCalendarData, 250);
-        window.setTimeout(applyCalendarData, 1000);
+        refreshCalendarDataWhenReady();
+        watchSpeakerOutput();
+        window.setTimeout(refreshCalendarDataWhenReady, 250);
+        window.setTimeout(refreshCalendarDataWhenReady, 1000);
+        window.setTimeout(refreshCalendarDataWhenReady, 2500);
+        window.setTimeout(refreshCalendarDataWhenReady, 5000);
 
         panels.forEach(function (panel) {
           if (panel.hasAttribute("hidden")) {
